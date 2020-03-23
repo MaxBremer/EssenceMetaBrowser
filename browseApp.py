@@ -1,6 +1,10 @@
 from tkinter import *
+import tkinter.simpledialog
+import tkinter.filedialog
 import browser as bs
 import random
+from os import path
+from os import mkdir
 
 class App:
     def __init__(self, master):
@@ -15,14 +19,15 @@ class App:
         self.group = Listbox(self.frame)
         self.group.pack(side=RIGHT)
 
-        self.bAdd = Button(self.frame, text="Add to Group", command=self.addToGroup)
-        self.bAdd.pack(side=TOP)
-        self.bRemove = Button(self.frame, text="Remove from Group", command=self.removeFromGroup)
-        self.bRemove.pack(side=TOP)
-        self.bSel = Button(self.frame, text="Select", command=self.select)
-        self.bSel.pack(side=BOTTOM)
-        self.bRand = Button(self.frame, text="Random Choice", command=self.rand)
-        self.bRand.pack(side=BOTTOM)
+        self.buttonList = []
+        self.addButton("Add to Group", self.addToGroup, TOP)
+        self.addButton("Remove from Group", self.removeFromGroup, TOP)
+
+        self.addButton("Save Group", self.saveGroup, TOP)
+        self.addButton("Load Group", self.loadGroup, TOP)
+
+        self.addButton("Select", self.select, BOTTOM)
+        self.addButton("Random Choice", self.rand, BOTTOM)
 
         self.eL = bs.EssenceList("es.txt")
         for e in self.eL.essenceList:
@@ -35,6 +40,16 @@ class App:
 
         self.oText = StringVar()
 
+        self.myPath = path.dirname(path.abspath(__file__))
+        self.savesPath = path.join(self.myPath, "saves")
+
+        if not path.exists(self.savesPath):
+            mkdir(self.savesPath)
+
+
+    def addButton(self, bText, bCommand, bSide):
+        self.buttonList.append(Button(self.frame, text=bText, command=bCommand))
+        self.buttonList[len(self.buttonList)-1].pack(side=bSide)
 
     def addOpt(self, opt):
         self.lb.insert(END, opt)
@@ -55,6 +70,31 @@ class App:
             selection = items[0]
             self.group.delete(selection)
             self.groupInds.pop(selection)
+
+    def saveGroup(self):
+        fileStr = ""
+        for gi in self.groupInds:
+            fileStr += "|" + str(gi)
+        fileStr = fileStr[1:]
+        fileName = tkinter.simpledialog.askstring("File name", "Enter file name. Will be saved as '<file-name>.emg'.")
+        fileName += ".emg"
+        f = open(path.join(self.savesPath, fileName), 'w+')
+        f.write(fileStr)
+        f.close()
+
+    def loadGroup(self):
+        #fileName = tkinter.simpledialog.askstring("File name", "What file should be loaded?")
+        fileName = tkinter.filedialog.askopenfilename(initialdir=self.savesPath, title="Select Group to be loaded")
+        f = open(fileName, 'r')
+        contents = f.read().split("|")
+        self.group.delete(0, END)
+        self.groupInds = []
+        self.output.delete('1.0', END)
+        for item in contents:
+            ind = int(item)
+            self.group.insert(END, self.eL.essenceList[ind].name)
+            self.groupInds.append(ind)
+
 
     def select(self):
         items = self.lb.curselection()
