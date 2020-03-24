@@ -1,2 +1,2 @@
 # EssenceMetaBrowser
-I created this for a cyoa (choose your own adventure) called Essence Meta that's based around a wide range of potential "essences" that were really a pain to search through. This browser should help with that. More features (save particular builds, search bar) to come!
+I created this for a cyoa (choose your own adventure) called Essence Meta that's based around a wide range of potential "essences" that were really a pain to search through. This browser should help with that. More features to come. NOTE: The Essences themselves contain traces of weird NSFW stuff. Sorry, I directly copied the whole lot of them, and the internet is a weird, unsettling place.
